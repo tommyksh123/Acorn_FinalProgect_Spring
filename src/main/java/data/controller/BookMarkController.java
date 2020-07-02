@@ -23,7 +23,7 @@ public class BookMarkController {
 	@Autowired
 	private BookMarkServiceInter service;
 	
-	//북마크 추가
+	//북마크 추가/
 	@PostMapping("/bookmark/insertOfBookMark")
 	public void insertOfBookMark(@RequestBody BookMarkDto dto)
 	{
