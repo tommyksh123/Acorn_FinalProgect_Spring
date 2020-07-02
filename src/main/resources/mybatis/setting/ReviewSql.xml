@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="Review">
+	<!-- 리뷰 등록 -->
+	<insert id="insertOfReview" parameterType="rdto">
+		insert into review values (0,#{user_id},#{product_id},#{review_text},#{review_img},#{review_star},now())
+	</insert>
+	
+	<!-- 리뷰 삭제 -->
+	<delete id="deleteOfReview" parameterType="int">
+		delete from review where review_id=#{review_id}
+	</delete>
+	
+	<!-- 게시글에 해당하는 리뷰 또는 내가 작성한 리뷰 조회
+	<select id="selectOfReview" parameterType="HashMap" resultType="rdto">
+		select * from review where ${name}=#{id} order by review_date desc
+	</select> -->
+	
+	<!-- 게시글에 해당하는 리뷰 또는 내가 작성한 리뷰 조회 -->
+	<select id="selectOfReview" parameterType="int" resultType="rdto">
+		select * from review where product_id = #{product_id} 
+	</select>	
+	
+	<!-- getData -->
+	<select id="selectOneOfReview" parameterType="int" resultType="rdto">
+		select * from review where review_id=#{review_id}
+	</select>
+	
+	
+</mapper>

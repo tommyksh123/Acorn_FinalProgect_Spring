@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="BuyOption">
+
+  <insert id="insertOfBuyOption" parameterType="bodto">
+     insert into buy_option values ( #{buy_id},#{buy_option_text},#{buy_option_candle} )
+  </insert>
+
+  <select id="selectOfBuyOptionOneData" parameterType="int" resultType="bodto">
+     select * from buy_option where buy_id = #{buy_id} 
+  </select>
+ 
+ <select id="selectOfBuyOptionAllDataText" parameterType="int" resultType="bodto">
+     select buy_option_text from buy_option where buy_id = #{buy_id} 
+  </select>
+  
+   <select id="selectOfBuyOptionAllDataCandle" parameterType="int" resultType="bodto">
+     select buy_option_candle from buy_option where buy_id = #{buy_id} 
+  </select>
+
+
+
+
+ <select id="selectOfBuyOptionAllDataText2" parameterType="int" resultType="String">
+     select buy_option_text from buy_option where buy_id = #{buy_id} 
+  </select>
+  
+   <select id="selectOfBuyOptionAllDataCandle2" parameterType="int" resultType="String">
+     select buy_option_candle from buy_option where buy_id = #{buy_id} 
+  </select>
+
+
+
+</mapper>

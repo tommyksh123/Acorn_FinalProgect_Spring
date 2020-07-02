@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="Buy">
+  <!-- 상세페이지에서 구매하기 누르면 DB에 insert -->
+  
+  <insert id="insertOfBuy" parameterType="budto">
+     insert into buy (user_id, product_id, buy_sell_date, buy_price, buy_count, buy_pick_date, buy_order_type, buy_order_id) 
+     values ( #{user_id}, #{product_id}, now(),#{buy_price},#{buy_count},#{buy_pick_date},0, #{buy_order_id}) 
+  </insert>
+  
+  <select id="selectOfMaxBuyId" resultType="int" >
+     select max(buy_id) from buy
+  </select>
+  
+  <!-- 상세페이지에서 구매하기 누르면 다음 화면에 DB값 보여줌 -->
+  <select id="selectOfBuyOneData" resultType="budto" parameterType="int">
+     select * from buy where buy_id = #{buy_id} 
+  </select> 
+
+  <!-- 구매내역 전체 다보내줌 -->
+  <select id="selectOfBuyAllData" resultType="budto" parameterType="budto">
+     select * from buy where buy_sell_date  between #{buy_sell_date} and now() and user_id = #{user_id}
+  </select>
+  
+  
+  <!-- 판매자 화면에서 현재 판매내역 전체 다보내줌 -->
+  <select id="selectOfBuyAllData2" resultType="budto" parameterType="budto">
+     select * from buy where buy_sell_date  between #{buy_sell_date} and now()
+  </select>
+  
+  
+  <!-- 판매자가 결재 확인 후 입금완료 버튼 누르기 -->
+  <update id="updateOfBuyOrderType" parameterType="int">
+  	update buy set buy_order_type = buy_order_type+1 where buy_id = #{buy_id}  
+  </update>
+  
+  <!-- 최근 주문 상품 -->
+  <select id="selectOfRecentBuyList" parameterType="int" resultType="pdto">
+	select p.*
+	from product p
+	join buy b
+	on p.product_id = b.product_id
+	where user_id = #{user_id}
+	order by b.buy_sell_date desc
+  </select>
+  
+  <!-- 총 구매금액 -->
+  <select id="selectOfTotalBuyPrice" parameterType="int" resultType="int">
+  	select sum(buy_price) from buy where user_id = #{user_id}
+  </select>
+  
+  <!-- 총 구매갯수 -->
+  <select id="selectOfTotalBuyCount" parameterType="int" resultType="int">
+	select count(*) from buy where user_id=#{user_id}  
+  </select>
+	  	
+	  	<!-- 주문취소 -->	
+	<delete id="deleteOfOrderbuyOption" parameterType="int">
+		delete from buy_option where buy_id = #{buy_id}
+	</delete>
+	
+	<delete id="deleteOfOrderbuy" parameterType="int">
+		delete from buy where buy_id = #{buy_id}
+	</delete>
+
+	<!-- 실 구매자만 리뷰를 달 수 있다 -->
+	<select id="selectOfReviewUser" parameterType="int" resultType="budto">
+		select distinct user_id from buy where product_id = #{product_id} and buy_order_type = 3
+	</select>
+
+</mapper>
+
+
+
+
+
+
+

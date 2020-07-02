@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="User">
+   <!-- 회원가입 -->
+   <insert id="insertOfUser" parameterType="udto">
+      insert into user values (0,#{user_name},#{user_email},#{user_hp},#{user_pass},now(),1)
+   </insert>
+   
+   <!-- 이메일 중복체크 -->
+   <select id="checkEmailOfUser" parameterType="String" resultType="int">
+      select count(*) from user where user_email=#{user_email}
+   </select>
+   
+   <!-- 이메일 찾기 -->
+   <select id="selectOfUserEmail" parameterType="HashMap" resultType="String">
+      select user_email from user where user_name=#{user_name} and user_hp=#{user_hp}
+   </select>
+   
+   <!-- 비밀번호 찾기 -->
+   <select id="selectOfUserPass"  parameterType="HashMap" resultType="String">
+      select user_pass from user where user_name=#{user_name} and user_email=#{user_email}
+   </select>
+   
+   <!-- 탈퇴 -->
+   <delete id="deleteOfUser" parameterType="int">
+      delete from user where user_id=#{user_id}
+   </delete>
+   
+   <!-- 탈퇴 -->
+   <delete id="deleteOfUserDelete" parameterType="udto">
+      delete from user where user_id=#{user_id} and user_pass=#{user_pass}
+   </delete>
+   
+   <!-- 회원 정보 수정(이름, 전화번호) -->
+   <update id="updateOfUser" parameterType="udto">
+      update user set user_name=#{user_name}, user_hp=#{user_hp} where user_id=#{user_id}
+   </update>
+   
+   <!-- 회원 비밀번호 수정 -->
+   <update id="updateOfUserPass" parameterType="udto">
+      update user set user_pass=#{user_pass} where user_id=#{user_id}
+   </update>
+   
+    <select id="selectAllOfUser" resultType="udto">
+      select *,(SELECT count(*) FROM buy b WHERE b.user_id= u.user_id) as buy_count 
+      from user u order by user_id
+   </select>
+   
+   <!-- getData -->
+   <select id="selectOneOfUser" parameterType="int" resultType="udto">
+      select * from user where user_id=#{user_id}
+   </select>
+   
+   <!-- 로그인시 필요 - 아이디와 비번이 맞는지 체크 -->
+   <select id="checkPassOfUser" parameterType="HashMap" resultType="int">
+      select count(*) from user where user_email=#{user_email} and user_pass=#{user_pass}
+   </select>
+   
+   <!-- 이메일로 user_id확인 -->
+   <select id="selectOfUserIdEmail" parameterType="String" resultType="int">
+      select user_id from user where user_email=#{user_email}
+   </select>
+   
+   <!-- 이메일로 member_type확인 -->
+   <select id="selectOfMemberTypeEmail" parameterType="String" resultType="int">
+      select member_type from user where user_email=#{user_email}
+   </select>
+</mapper>

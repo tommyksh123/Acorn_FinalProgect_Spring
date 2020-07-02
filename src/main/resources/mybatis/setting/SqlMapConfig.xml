@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE configuration PUBLIC "-//mybatis.org//DTD Config 3.0//EN" "HTTP://mybatis.org/dtd/mybatis-3-config.dtd">
+<configuration>
+	<typeAliases>
+		<typeAlias type="data.dto.ProductDto" alias="pdto"/>
+		<typeAlias type="data.dto.UserDto" alias="udto"/>
+		<typeAlias type="data.dto.ReviewDto" alias="rdto"/>
+		<typeAlias type="data.dto.RecentProductDto" alias="rpdto"/>
+		<typeAlias type="data.dto.BookMarkDto" alias="bmdto"/>
+		<typeAlias type="data.dto.BuyDto" alias="budto"/>
+		<typeAlias type="data.dto.BuyOptionDto" alias="bodto"/>
+	</typeAliases>
+	<mappers>
+		<mapper resource="mybatis/setting/ProductSql.xml"/>
+		<mapper resource="mybatis/setting/UserSql.xml"/>
+		<mapper resource="mybatis/setting/ReviewSql.xml"/>
+		<mapper resource="mybatis/setting/RecentProductSql.xml"/>
+		<mapper resource="mybatis/setting/BookMarkSql.xml"/>
+		<mapper resource="mybatis/setting/BuySql.xml"/>
+		<mapper resource="mybatis/setting/BuyOptionSql.xml"/>
+	</mappers>
+</configuration>

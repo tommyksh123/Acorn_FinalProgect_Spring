@@ -1,0 +1,243 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="Product">
+	<!-- 상품 등록 -->
+	<insert id="insertOfProduct" parameterType="pdto">
+		insert into product values (0,#{product_name},#{product_text},#{product_img},#{product_price},
+		#{product_category},0,#{product_option})
+	</insert>
+	
+	<!-- 상품 기본정보 변경 -->
+	<update id="updateProduct" parameterType="pdto">
+		update product set product_name=#{product_name},product_text=#{product_text},product_img=#{product_img},
+			product_price=#{product_price},product_category=#{product_category},
+			product_option=#{product_option} 
+		where product_id=#{product_id}
+	</update>
+
+	<!-- 판매량 증가 -->
+	<update id="updateOfProductCount" parameterType="int">
+		update product set product_total_count=product_total_count+1 where product_id=#{product_id}
+	</update>
+	
+	<!-- 상품 삭제 -->
+	<delete id="deleteOfProduct" parameterType="int">
+		delete from product where product_id=#{product_id}
+	</delete>
+	
+	<!-- 전체 목록 조회 -->
+	<select id="selectAllOfProduct" resultType="pdto">
+		select * from product order by product_id desc
+	</select>
+	
+	<!-- 상품 개별 조회 -->
+	<select id="selectOneOfProduct" parameterType="int" resultType="pdto">
+		select * from product where product_id=#{product_id}
+	</select>
+	
+	<!-- 최신순 -->
+	<select id="selectOfProductNew" resultType="pdto">
+		<!-- select * from product order by product_id desc -->
+		SELECT p.*, 
+		(SELECT count(*) FROM review r WHERE r.product_id= p.product_id) 
+		AS review_Count,
+		round(ifnull((select avg(review_star) from review r where r.product_id = p.product_id group by r.product_id ),0),1) 
+		AS review_avg_star
+		FROM product p
+		order by product_id desc
+	</select>
+	
+	<!-- 가격 높은 순 -->
+	<select id="selectOfProductPriceUp" resultType="pdto">
+		<!-- select * from product order by product_price desc -->
+		SELECT p.*, 
+		(SELECT count(*) FROM review r WHERE r.product_id= p.product_id) 
+		AS review_Count,
+		round(ifnull((select avg(review_star) from review r where r.product_id = p.product_id group by r.product_id ),0),1) 
+		AS review_avg_star
+		FROM product p
+		order by product_price desc , product_id desc
+	</select>
+	
+	<!-- 가격 낮은 순 -->
+	<select id="selectOfProductPriceDown" resultType="pdto">
+		<!-- select * form product order by product_price -->
+		SELECT p.*, 
+		(SELECT count(*) FROM review r WHERE r.product_id= p.product_id) 
+		AS review_Count,
+		round(ifnull((select avg(review_star) from review r where r.product_id = p.product_id group by r.product_id ),0),1) 
+		AS review_avg_star
+		FROM product p
+		order by product_price , product_id desc
+	</select>
+	
+	<!-- 판매량 높은 순 -->
+	<select id="selectOfProductCount" resultType="pdto">
+		<!-- select * form product order by product_total_count desc -->
+		SELECT p.*, 
+		(SELECT count(*) FROM review r WHERE r.product_id= p.product_id) 
+		AS review_Count,
+		round(ifnull((select avg(review_star) from review r where r.product_id = p.product_id group by r.product_id ),0),1) 
+		AS review_avg_star
+		FROM product p
+		order by product_total_count desc , product_id desc
+		
+	</select>	
+	
+	
+	<!-- 리뷰 많은 순 -->
+	<select id="selectOfReviewCount" resultType="pdto">
+		SELECT p.*, 
+		(SELECT count(*) FROM review r WHERE r.product_id= p.product_id) 
+		AS review_Count,
+		round(ifnull((select avg(review_star) from review r where r.product_id = p.product_id group by r.product_id ),0),1) 
+		AS review_avg_star
+		FROM product p
+		order by (SELECT count(*) FROM review r WHERE r.product_id= p.product_id) desc , product_id desc
+	</select>
+	
+	
+	<!-- 검색 시  -->
+	<select id="selectOfSearchProduct" resultType="pdto" parameterType="String">
+		SELECT p.*, 
+		(SELECT count(*) FROM review r WHERE r.product_id= p.product_id) 
+		AS review_Count,
+		round(ifnull((select avg(review_star) from review r where r.product_id = p.product_id group by r.product_id ),0),1) 
+		AS review_avg_star
+		FROM product p
+		where product_name like concat('%',#{product_name},'%') 
+		or product_text like concat('%',#{product_name},'%') 
+		order by product_id desc
+	</select>
+	
+	
+	
+	<!-- 총 상품 등록 수 -->
+<select id="selectOfAlltotalCount" resultType="int">
+	select count(*) from product
+</select>
+	
+<!-- 총 매출 금액 -->
+<select id="selectOfAllPrice" resultType="int">
+		select sum(buy_price) from buy where buy_order_type &gt;= 1
+	</select>
+
+<!-- 카테고리별 상품 조회 -->
+   <select id="selectOfProductCategory" resultType="pdto" parameterType="String">
+      SELECT p.*, 
+      (SELECT count(*) FROM review r WHERE r.product_id= p.product_id) 
+      AS review_Count,
+      round(ifnull((select avg(review_star) from review r where r.product_id = p.product_id group by r.product_id ),0),1) 
+      AS review_avg_star
+      FROM product p
+      where product_category=#{product_category}
+      order by product_id desc
+   </select>
+	
+	
+	
+<!-- 구매 진행 중 상품리스트 -->
+	<select id="selectOfNowOrderList" parameterType="HashMap" resultType="HashMap">
+		select p.*, b.buy_id, b.user_id,
+		date_format(b.buy_sell_date,'%Y-%m-%d') buy_sell_date, b.buy_price,
+		b.buy_count, date_format(b.buy_pick_date,'%Y-%m-%d') buy_pick_date,
+		b.buy_order_type, b.buy_order_id
+		from product p
+		join buy b
+		on p.product_id = b.product_id
+		where buy_order_type &lt; 3
+		<if test="user_id != 1">
+			 and user_id = #{user_id}
+		</if>
+		order by b.buy_id desc
+	</select>
+	
+
+ 
+ <!-- 지난주문내역(수령완료) 상품리스트 -->
+   <select id="selectOfOrderList" parameterType="HashMap"
+      resultType="HashMap">
+      select p.*, b.buy_id, b.user_id, date_format(b.buy_sell_date,'%Y-%m-%d
+      %H:%i') buy_sell_date, b.buy_price, b.buy_count,
+      date_format(b.buy_pick_date,'%Y-%m-%d %H:%i') buy_pick_date,
+      b.buy_order_type, b.buy_order_id
+      from product p
+      join buy b
+      on
+      p.product_id = b.product_id
+      where
+      <if test="user_id != 1">
+         user_id = #{user_id} and
+      </if>
+      buy_order_type &gt;= 3
+      order by b.buy_id desc
+   </select>
+ 
+ 
+ 
+
+<!-- 지난주문내역(수령완료) 날짜 별 검색 리스트 
+<select id="selectOfDateOrderList" parameterType="HashMap" resultType="HashMap">
+	select p.*, b.buy_id, b.user_id, date_format(b.buy_sell_date,'%Y-%m-%d %H:%i') buy_sell_date, b.buy_price, b.buy_count, date_format(b.buy_pick_date,'%Y-%m-%d %H:%i') buy_pick_date, b.buy_order_type, b.buy_order_id
+	from product p
+	join buy b
+	on p.product_id = b.product_id
+	where buy_order_type &gt;= 3 and buy_sell_date between date(#{startday}) and date(#{endday})+1
+</select>
+-->
+
+
+
+	<!-- 지난주문내역(수령완료) 날짜 별 검색 리스트 -->
+	<select id="selectOfDateOrderList" parameterType="HashMap" resultType="HashMap">
+		select p.*, b.buy_id, b.user_id,
+		date_format(b.buy_sell_date,'%Y-%m-%d') buy_sell_date,
+		b.buy_price, b.buy_count,
+		date_format(b.buy_pick_date,'%Y-%m-%d') buy_pick_date,
+		b.buy_order_type, b.buy_order_id
+		from product p
+		join buy b
+		on p.product_id = b.product_id
+		where
+		<if test="user_id != 1">
+			user_id = #{user_id} and
+		</if>
+		b. buy_order_type >= 3 and
+		date(b.buy_sell_date) between #{startday}
+		and #{endday}
+		order by b.buy_id desc
+	</select>
+
+
+
+
+
+
+<!-- 지난 주문 상세 내역 -->
+<select id="selectOfOrderSheetList" parameterType="HashMap" resultType="HashMap">
+	select u.user_name, b.buy_order_id, date_format(b.buy_sell_date,'%Y-%m-%d %H:%i') buy_sell_date, b.buy_order_type, b.buy_price, b.buy_count, p.product_img, p.product_name, p.product_price
+	from buy b
+	join product p
+	on b.product_id = p.product_id
+	join user u
+	on b.user_id = u.user_id
+	where b.buy_order_id = #{buy_order_id}
+</select>
+
+
+
+
+	<!-- 최근 상품 목록에서 옵션 꺼내오기 -->
+	<select id="selectOfBuyOption" parameterType="int" resultType="bodto">
+		select * from buy_option where buy_id = #{buy_id} 
+	</select>
+
+
+
+
+
+	
+</mapper>

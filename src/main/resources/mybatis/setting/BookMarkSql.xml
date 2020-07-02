@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="BookMark">
+	<!-- 담기 -->
+	<insert id="insertOfBookMark" parameterType="bmdto">
+		insert into bookmark values (#{user_id},#{product_id})
+	</insert>
+	
+	<!-- 취소 -->
+	<delete id="deleteOfBookMark" parameterType="bmdto">
+		delete from bookmark where user_id=#{user_id} and product_id = #{product_id}
+	</delete>
+	
+	<!-- 북마크를 이미 누른 상품인지 아닌지 구분(눌렀으면 다시 누를 수 없음) -->
+	<select id="stateOfBookMark" parameterType="bmdto" resultType="int" >
+		select count(*) from bookmark where user_id=#{user_id} and product_id = #{product_id}
+	</select>
+	
+	
+	<!-- 목록 -->
+	<select id="selectOfBookMark" parameterType="int" resultType="pdto">
+		SELECT p.* FROM product p
+		join bookmark b 
+		on b.product_id=p.product_id
+		where user_id=#{user_id}
+	</select>
+</mapper>
